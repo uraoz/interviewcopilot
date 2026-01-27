@@ -1,263 +1,188 @@
-# Interview Copilot 🚀
+# 就活コパイロット 🎓
 
 ## [aicopilot.chat](https://aicopilot.chat/)
 
-An AI-powered interview assistant that provides real-time transcription and intelligent responses during technical interviews, now supporting both OpenAI and the latest Gemini models.
+就職面接でリアルタイムの音声認識とAIによる回答サポートを提供する、就活生のための面接練習・本番サポートツールです。
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[](https://opensource.org/licenses/MIT)
+## こんな人におすすめ 🎯
 
-## Features ✨
+- 📝 面接で何を話せばいいか分からない就活生
+- 🗣️ 面接練習を一人でもしたい方
+- 💡 志望動機や自己PRの回答例がほしい方
+- 🏢 本番の面接でヒントがほしい方
+- 📚 グループディスカッションの対策をしたい方
 
-  - 🎙️ **Real-time Transcription**: High-accuracy voice-to-text for both the interviewer and candidate using Azure Cognitive Services.
-  - 🤖 **AI-Powered Insights**: Get intelligent suggestions with conversational context awareness, powered by leading models from OpenAI and Google.
-  - 🖼️ **Picture-in-Picture (PiP) Mode**: Keep an eye on the AI log in a separate, floating window so you can focus on the interview.
-  - 💻 **Code Formatting**: Clear syntax highlighting for technical discussions makes code easy to read and understand.
-  - ✨ **Enhanced UI**: A refreshed and more intuitive user interface for a seamless experience.
-  - 🔄 **Latest AI Models**: Support for the newest models, including **Gemini 2.5 Pro** and **Gemini 2.5 Flash**.
-  - 📚 **Question History**: Combine multiple questions from the history to ask the AI for a comprehensive analysis.
-  - ⏱️ **Silence Detection**: Automatically submits recognized speech after a configurable period of silence for a smoother workflow.
-  - ⚙️ **Highly Configurable**: Tailor AI models, API keys, response length, and system prompts to your exact needs.
+## 機能 ✨
 
-## Technologies Used 🛠️
+- 🎙️ **リアルタイム音声認識**: 面接官の質問を自動で文字起こし
+- 🤖 **AI回答アシスト**: あなたのプロフィールに合わせた回答例をAIが提案
+- 🖼️ **ピクチャーインピクチャー (PiP) モード**: AIの回答を別ウィンドウで表示し、面接に集中
+-  **質問履歴**: 過去の質問を振り返り、対策に活用
+- ⏱️ **自動送信機能**: 質問が終わると自動でAIに問い合わせ
+- ⚙️ **カスタマイズ設定**: 回答の長さやスタイルをお好みで調整
 
-  - **Frontend**: React, Redux, Material-UI
-  - **AI Services**: OpenAI GPT, Google Gemini, Azure Cognitive Services (Speech)
-  - **Build Tools**: npm
-  - **Other Libraries**: React Markdown, Highlight.js, Microsoft Cognitive Services Speech SDK
+## 対応する面接シーン �
 
-## Getting Started 🚀
+- **ES（エントリーシート）添削**: 自己PRや志望動機の推敲
+- **個人面接**: 一次〜最終面接の練習と本番サポート
+- **グループディスカッション**: 議題に対する意見のヒント
+- **ケース面接**: 課題解決型の質問への対応
+- **逆質問対策**: 面接官への質問例の提案
 
-### Prerequisites
+## 使い方（3ステップ）🚀
 
-  - Node.js (v18+)
-  - npm (v9+)
-  - **OpenAI API key**: Get your key from [OpenAI](https://platform.openai.com/docs/overview).
-  - **Gemini API key**: Get your key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-  - **Azure Speech Service key**: Get a free trial key from [Microsoft Azure](https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account).
+### ステップ1: 準備
 
-### Installation
+1. **リポジトリをダウンロード**
+   
+   ```bash
+   git clone https://github.com/hariiprasad/interviewcopilot.git
+   cd interviewcopilot
+   ```
 
-1.  **Clone the repository**
+2. **必要なソフトをインストール**
+   
+   ```bash
+   npm install
+   ```
 
-    ```bash
-    git clone https://github.com/hariiprasad/interviewcopilot.git
-    cd interviewcopilot
-    ```
+3. **アプリを起動**
+   
+   ```bash
+   npm run dev
+   ```
 
-2.  **Install dependencies**
+4. **ブラウザでアクセス**
+   
+   `http://localhost:3000` を開く
+
+### ステップ2: 初期設定
+
+設定画面（⚙️アイコン）で以下を入力:
+
+| 項目 | 説明 | 取得先 |
+|------|------|--------|
+| Gemini APIキー | AIの回答生成に使用 | [Google AI Studio](https://aistudio.google.com/app/apikey)（無料） |
+| Azure Speech Serviceキー | 音声認識に使用 | [Microsoft Azure](https://azure.microsoft.com/ja-jp/)（無料枠あり） |
 
-    ```bash
-    npm install
-    ```
+> 💡 **ヒント**: APIキーは無料で取得できます。学生メールを使うとAzureの追加クレジットがもらえることも！
+
+### ステップ3: 面接練習を開始
+
+1. **マイクを許可** - ブラウザからのマイク許可をクリック
+2. **録音開始** - 面接官役の質問を録音、または自分で質問を入力
+3. **AIが回答例を提案** - 数秒で回答のヒントが表示されます
 
-3.  **Run the development server**
+## 画面の見方 🖥️
 
-    ```bash
-    npm run dev
-    ```
+```
+┌─────────────────┬─────────────────┬─────────────────┐
+│   質問パネル    │    AIログ       │   あなたの声    │
+│    （左側）     │   （中央）      │    （右側）     │
+├─────────────────┼─────────────────┼─────────────────┤
+│ ・質問の録音    │ ・AIの回答例    │ ・自分の回答    │
+│ ・質問の編集    │ ・過去の履歴    │ ・手動入力も可  │
+│ ・質問履歴      │ ・PiPモード     │                 │
+└─────────────────┴─────────────────┴─────────────────┘
+```
 
-4.  **Access the application**
-    Open your browser to `http://localhost:3000`
+## よくある質問への対応例 📋
 
-## Configuration ⚙️
+このツールは以下のような質問に対して回答例を生成できます:
 
-1.  Open the **Settings** dialog (⚙️ icon in the header).
-2.  Enter your API credentials:
-      - OpenAI API Key (for OpenAI models)
-      - Gemini API Key (for Gemini models)
-      - Azure Speech Service Key
-      - Azure Region
-3.  Configure your preferences:
-      - AI Model (Choose from OpenAI or Gemini models)
-      - AI System Prompt
-      - Auto-Submit & Manual modes
-      - AI Response Length (concise, medium, lengthy)
-      - Silence Timer Duration
+| カテゴリ | 質問例 |
+|----------|--------|
+| 自己紹介 | 「自己紹介をしてください」 |
+| 志望動機 | 「なぜ弊社を志望したのですか？」 |
+| 自己PR | 「あなたの強みを教えてください」 |
+| 学生時代 | 「学生時代に力を入れたことは？」（ガクチカ） |
+| 挫折経験 | 「困難を乗り越えた経験を教えてください」 |
+| 将来像 | 「5年後どうなっていたいですか？」 |
+| 逆質問 | 「最後に何か質問はありますか？」 |
 
-## Usage 🖥️
+## 効果的な使い方 �
 
-### Main Interface Components
+### 練習モード（一人で練習）
 
-1.  **System Audio Panel (Left)**
+1. よくある質問リストを用意
+2. 質問を入力してAIの回答例を確認
+3. 自分なりにアレンジして声に出して練習
+4. 録音して聞き直す
 
-      - Start/Stop system audio capture for the interviewer.
-      - View and edit the transcribed questions.
-      - Manage and combine questions from history.
+### 本番サポートモード
 
-2.  **AI Assistant Log (Center)**
+1. PiPモードをオンにして別ウィンドウでAI回答を表示
+2. オンライン面接中にさりげなく参考にする
+3. 自分の言葉で話すことを忘れずに！
 
-      - View real-time AI responses.
-      - Benefit from code formatting and syntax highlighting.
-      - Access all previous response history.
-      - Toggle auto-scroll and open the PiP window.
+> ⚠️ **注意**: このツールはあくまで参考用です。AIの回答をそのまま読み上げることはおすすめしません。自分の経験や言葉で話すことが大切です。
 
-3.  **Your Mic Panel (Right)**
+## システムプロンプトのカスタマイズ例 ⚙️
 
-      - Start/Stop your microphone for candidate audio.
-      - Toggle manual input mode.
-      - Manually submit your responses to the AI.
+設定画面で「AIシステムプロンプト」を変更すると、回答のスタイルをカスタマイズできます:
 
-## Troubleshooting 🛠️
+**就活生向けプロンプト例:**
 
-**Common Issues:**
+```
+あなたは日本の就職活動に詳しい面接コーチです。
+大学3年生・4年生が企業の新卒採用面接で使える回答例を提案してください。
+回答は以下の点を意識してください：
+- 具体的なエピソードを含める
+- STAR法（状況・課題・行動・結果）を意識
+- 論理的かつ簡潔に（1〜2分で話せる長さ）
+- 敬語を使用
+- ポジティブな印象を与える表現
+```
 
-1.  **Audio Permissions**: Ensure your browser has microphone access. If permissions were denied, refresh the page and allow access when prompted.
-2.  **API Errors**:
-      - Double-check that your API keys in settings are correct.
-      - Verify your internet connection.
-      - Ensure the correct API key is provided for the selected AI model (e.g., Gemini key for Gemini models).
-3.  **Transcription Issues**: For best results, speak clearly with minimal background noise and verify your Azure Speech Service subscription is active.
+## トラブルシューティング 🛠️
 
-## Contributing 🤝
+| 問題 | 解決方法 |
+|------|----------|
+| マイクが使えない | ブラウザにマイク権限を許可する。アドレスバー左の🔒マークから確認 |
+| AIが回答しない | APIキーが正しく入力されているか確認 |
+| 音声認識が不正確 | 静かな環境で、ゆっくりはっきり話す |
+| 読み込みが遅い | インターネット接続を確認 |
 
-We welcome contributions\! Please follow these steps:
+## プロジェクト構造 📁
 
-1.  Fork the repository.
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
+```
+interviewcopilot/
+├── components/          # 再利用可能なコンポーネント
+├── pages/               # 画面（ページ）
+│   ├── index.js         # トップページ
+│   ├── interview.js     # メイン面接画面
+│   ├── landing.js       # ランディングページ
+│   └── pip-log.js       # PiPウィンドウ
+├── public/              # 画像などの静的ファイル
+├── redux/               # 状態管理
+├── styles/              # デザイン（CSS）
+└── utils/               # 便利な関数
+```
 
-## License 📄
+## 開発に参加したい方へ 🤝
 
-This project is licensed under the MIT License.
+このプロジェクトはオープンソースです。機能追加やバグ修正など、どなたでも参加できます！
 
-## Acknowledgments 🙏
+1. リポジトリをフォーク
+2. 新しいブランチを作成 (`git checkout -b feature/新機能`)
+3. 変更をコミット (`git commit -m '機能を追加'`)
+4. プッシュ (`git push origin feature/新機能`)
+5. プルリクエストを作成
 
-  - OpenAI for their GPT models.
-  - Google for the Gemini models.
-  - Microsoft Azure for Cognitive Services.
-  - The Material-UI team and the broader React community for their fantastic tools.Of course\! Based on the new features like the enhanced UI, Picture-in-Picture (PiP) mode, and the addition of the latest Gemini models, here is an updated version of your `README.md` file.
+## ライセンス 📄
 
------
+MITライセンス（無料で使用・改変・再配布可能）
 
-# Interview Copilot 🚀
+## 謝辞 🙏
 
-## [aicopilot.chat](https://aicopilot.chat/)
+- AIモデルを提供するOpenAI・Google
+- 音声認識を提供するMicrosoft Azure
+- UIライブラリを提供するMaterial-UI・Reactコミュニティ
 
-An AI-powered interview assistant that provides real-time transcription and intelligent responses during technical interviews, now supporting both OpenAI and the latest Gemini models.
+---
 
-[](https://opensource.org/licenses/MIT)
+**就活がんばってください！🌸**
 
-## Features ✨
-
-  - 🎙️ **Real-time Transcription**: High-accuracy voice-to-text for both the interviewer and candidate using Azure Cognitive Services.
-  - 🤖 **AI-Powered Insights**: Get intelligent suggestions with conversational context awareness, powered by leading models from OpenAI and Google.
-  - 🖼️ **Picture-in-Picture (PiP) Mode**: Keep an eye on the AI log in a separate, floating window so you can focus on the interview.
-  - 💻 **Code Formatting**: Clear syntax highlighting for technical discussions makes code easy to read and understand.
-  - ✨ **Enhanced UI**: A refreshed and more intuitive user interface for a seamless experience.
-  - 🔄 **Latest AI Models**: Support for the newest models, including **Gemini 2.5 Pro** and **Gemini 2.5 Flash**.
-  - 📚 **Question History**: Combine multiple questions from the history to ask the AI for a comprehensive analysis.
-  - ⏱️ **Silence Detection**: Automatically submits recognized speech after a configurable period of silence for a smoother workflow.
-  - ⚙️ **Highly Configurable**: Tailor AI models, API keys, response length, and system prompts to your exact needs.
-
-## Technologies Used 🛠️
-
-  - **Frontend**: React, Redux, Material-UI
-  - **AI Services**: OpenAI GPT, Google Gemini, Azure Cognitive Services (Speech)
-  - **Build Tools**: npm
-  - **Other Libraries**: React Markdown, Highlight.js, Microsoft Cognitive Services Speech SDK
-
-## Getting Started 🚀
-
-### Prerequisites
-
-  - Node.js (v18+)
-  - npm (v9+)
-  - **OpenAI API key**: Get your key from [OpenAI](https://platform.openai.com/docs/overview).
-  - **Gemini API key**: Get your key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-  - **Azure Speech Service key**: Get a free trial key from [Microsoft Azure](https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account).
-
-### Installation
-
-1.  **Clone the repository**
-
-    ```bash
-    git clone https://github.com/hariiprasad/interviewcopilot.git
-    cd interviewcopilot
-    ```
-
-2.  **Install dependencies**
-
-    ```bash
-    npm install
-    ```
-
-3.  **Run the development server**
-
-    ```bash
-    npm run dev
-    ```
-
-4.  **Access the application**
-    Open your browser to `http://localhost:3000`
-
-## Configuration ⚙️
-
-1.  Open the **Settings** dialog (⚙️ icon in the header).
-2.  Enter your API credentials:
-      - OpenAI API Key (for OpenAI models)
-      - Gemini API Key (for Gemini models)
-      - Azure Speech Service Key
-      - Azure Region
-3.  Configure your preferences:
-      - AI Model (Choose from OpenAI or Gemini models)
-      - AI System Prompt
-      - Auto-Submit & Manual modes
-      - AI Response Length (concise, medium, lengthy)
-      - Silence Timer Duration
-
-## Usage 🖥️
-
-### Main Interface Components
-
-1.  **System Audio Panel (Left)**
-
-      - Start/Stop system audio capture for the interviewer.
-      - View and edit the transcribed questions.
-      - Manage and combine questions from history.
-
-2.  **AI Assistant Log (Center)**
-
-      - View real-time AI responses.
-      - Benefit from code formatting and syntax highlighting.
-      - Access all previous response history.
-      - Toggle auto-scroll and open the PiP window.
-
-3.  **Your Mic Panel (Right)**
-
-      - Start/Stop your microphone for candidate audio.
-      - Toggle manual input mode.
-      - Manually submit your responses to the AI.
-
-## Troubleshooting 🛠️
-
-**Common Issues:**
-
-1.  **Audio Permissions**: Ensure your browser has microphone access. If permissions were denied, refresh the page and allow access when prompted.
-2.  **API Errors**:
-      - Double-check that your API keys in settings are correct.
-      - Verify your internet connection.
-      - Ensure the correct API key is provided for the selected AI model (e.g., Gemini key for Gemini models).
-3.  **Transcription Issues**: For best results, speak clearly with minimal background noise and verify your Azure Speech Service subscription is active.
-
-## Contributing 🤝
-
-We welcome contributions\! Please follow these steps:
-
-1.  Fork the repository.
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
-
-## License 📄
-
-This project is licensed under the MIT License.
-
-## Acknowledgments 🙏
-
-  - OpenAI for their GPT models.
-  - Google for the Gemini models.
-  - Microsoft Azure for Cognitive Services.
-  - The Material-UI team and the broader React community for their fantastic tools.
+ご質問や要望があれば、Issueで教えてください。
