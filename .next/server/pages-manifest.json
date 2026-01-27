@@ -2,7 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/": "pages/index.js",
+  "/interview": "pages/interview.js",
   "/landing": "pages/landing.js",
-  "/practice": "pages/practice.js",
-  "/interview": "pages/interview.js"
+  "/pip-log": "pages/pip-log.js"
 }
