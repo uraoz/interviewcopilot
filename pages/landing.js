@@ -105,25 +105,47 @@ export default function LandingPage() {
           <Typography variant="h5" component="p" paragraph sx={{ mb: 4, opacity: 0.9 }}>
             Elevate your technical interviews with AI-powered real-time transcription, intelligent suggestions, and seamless assistance. Focus on the conversation, let us handle the notes.
           </Typography>
-          <Link href="/interview" passHref>
-            <Button
-              variant="contained"
-              color="secondary"
-              size="large"
-              endIcon={<ArrowForwardIcon />}
-              sx={{ 
-                padding: '12px 30px', 
-                fontSize: '1.1rem',
-                boxShadow: '0px 4px 15px rgba(0,0,0,0.2)',
-                '&:hover': {
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/interview" passHref>
+              <Button
+                variant="contained"
+                color="secondary"
+                size="large"
+                endIcon={<ArrowForwardIcon />}
+                sx={{
+                  padding: '12px 30px',
+                  fontSize: '1.1rem',
+                  boxShadow: '0px 4px 15px rgba(0,0,0,0.2)',
+                  '&:hover': {
                     boxShadow: '0px 6px 20px rgba(0,0,0,0.25)',
                     transform: 'translateY(-2px)'
-                }
-              }}
-            >
-              Start Assisting
-            </Button>
-          </Link>
+                  }
+                }}
+              >
+                面接アシスト開始
+              </Button>
+            </Link>
+            <Link href="/practice" passHref>
+              <Button
+                variant="outlined"
+                size="large"
+                endIcon={<MicIcon />}
+                sx={{
+                  padding: '12px 30px',
+                  fontSize: '1.1rem',
+                  borderColor: 'rgba(255,255,255,0.7)',
+                  color: 'white',
+                  '&:hover': {
+                    borderColor: 'white',
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    transform: 'translateY(-2px)'
+                  }
+                }}
+              >
+                面接練習を始める
+              </Button>
+            </Link>
+          </Box>
         </Container>
       </HeroSection>
 
@@ -150,7 +172,7 @@ export default function LandingPage() {
         </Container>
       </Section>
 
-      <Section id="about" sx={{ backgroundColor: 'rgba(0,0,0,0.02)'}}>
+      <Section id="about" sx={{ backgroundColor: 'rgba(0,0,0,0.02)' }}>
         <Container maxWidth="md">
           <Typography variant="h4" component="h2" align="center" gutterBottom sx={{ mb: 4 }}>
             About the Tool
@@ -168,7 +190,7 @@ export default function LandingPage() {
         <Typography variant="body2">
           &copy; {new Date().getFullYear()} Interview Copilot. All rights reserved.
         </Typography>
-        <Typography variant="caption" display="block" sx={{ mt: 1}}>
+        <Typography variant="caption" display="block" sx={{ mt: 1 }}>
           Powered by AI for smarter interviews.
         </Typography>
       </Footer>

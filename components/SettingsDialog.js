@@ -67,7 +67,7 @@ export default function SettingsDialog({ open, onClose, onSave }) {
     // If the currently selected model was the one removed, reset to a default
     let currentAiModel = settings.aiModel;
     if (settings.customModels[indexToRemove]?.value === currentAiModel) {
-        currentAiModel = builtInModelGroups[0]?.models[0]?.value || 'gpt-3.5-turbo'; // Fallback
+      currentAiModel = builtInModelGroups[0]?.models[0]?.value || 'gpt-3.5-turbo'; // Fallback
     }
     setSettings({ ...settings, customModels: updatedCustomModels, aiModel: currentAiModel });
   };
@@ -77,17 +77,17 @@ export default function SettingsDialog({ open, onClose, onSave }) {
     // Validate model-key pairing
     const selectedModelValue = settings.aiModel;
     let selectedModelIsGemini = selectedModelValue.startsWith('gemini');
-    
+
     // Check if the selected model is a custom Gemini model
     const customGeminiModel = (settings.customModels || []).find(m => m.value === selectedModelValue && m.type === 'gemini');
     if (customGeminiModel) {
-        selectedModelIsGemini = true;
+      selectedModelIsGemini = true;
     }
-     // Check if the selected model is a custom OpenAI model
+    // Check if the selected model is a custom OpenAI model
     const customOpenAIModel = (settings.customModels || []).find(m => m.value === selectedModelValue && m.type === 'openai');
-     if (customOpenAIModel && !selectedModelIsGemini) { // if it's custom and not already flagged as gemini
-        // it's an OpenAI type model
-     }
+    if (customOpenAIModel && !selectedModelIsGemini) { // if it's custom and not already flagged as gemini
+      // it's an OpenAI type model
+    }
 
 
     if (selectedModelIsGemini && !settings.geminiKey) {
@@ -98,14 +98,14 @@ export default function SettingsDialog({ open, onClose, onSave }) {
       alert('Selected OpenAI model requires an OpenAI API key. Please enter a key or select a different model.');
       return;
     }
-     if (customOpenAIModel && !settings.openaiKey) {
+    if (customOpenAIModel && !settings.openaiKey) {
       alert('Selected custom OpenAI-type model requires an OpenAI API key.');
       return;
     }
 
 
     if (!settings.azureToken || !settings.azureRegion) {
-        alert('Azure Speech Token and Region are required for voice transcription.');
+      alert('Azure Speech Token and Region are required for voice transcription.');
     }
 
     setConfig(settings); // Uses the setConfig from utils/config.js
@@ -130,7 +130,7 @@ export default function SettingsDialog({ open, onClose, onSave }) {
         />
         <TextField
           fullWidth margin="dense" name="geminiKey" label="Gemini API Key" type="password"
-          value={settings.geminiKey || ''} onChange={handleChange} helperText="Required for Gemini models." sx={{mt:2}}
+          value={settings.geminiKey || ''} onChange={handleChange} helperText="Required for Gemini models." sx={{ mt: 2 }}
         />
 
         <Divider sx={{ my: 3 }} />
@@ -161,92 +161,118 @@ export default function SettingsDialog({ open, onClose, onSave }) {
             ))}
           </Select>
         </FormControl>
+
+        <Divider sx={{ my: 3 }} />
+        <Typography variant="h6" gutterBottom>面接先企業情報</Typography>
+        <TextField
+          fullWidth margin="dense" name="companyName" label="企業名"
+          value={settings.companyName || ''} onChange={handleChange}
+          helperText="面接を受ける企業名を入力してください。"
+          placeholder="例: 株式会社〇〇"
+        />
+        <TextField
+          fullWidth margin="dense" name="companyInfo" label="企業情報（業務内容・理念など）" multiline rows={4}
+          value={settings.companyInfo || ''} onChange={handleChange}
+          helperText="企業の業務内容、企業理念、求める人物像などを記入すると、その企業に合わせた回答を提案します。"
+          sx={{ mt: 2 }}
+          placeholder="【事業内容】&#10;〇〇事業を展開...&#10;&#10;【企業理念】&#10;「〇〇」を掲げ...&#10;&#10;【求める人物像】&#10;チャレンジ精神のある人..."
+        />
+
+        <Divider sx={{ my: 3 }} />
+        <Typography variant="h6" gutterBottom>あなたの情報</Typography>
+        <TextField
+          fullWidth margin="dense" name="esContent" label="ES（エントリーシート）の内容" multiline rows={6}
+          value={settings.esContent || ''} onChange={handleChange}
+          helperText="自己PR、志望動機、ガクチカなどを記入すると、AIが回答時に参考にします。"
+          sx={{ mt: 2 }}
+          placeholder="【自己PR】&#10;私の強みは〇〇です...&#10;&#10;【志望動機】&#10;貴社を志望する理由は...&#10;&#10;【ガクチカ】&#10;学生時代に力を入れたことは..."
+        />
         <TextField
           fullWidth margin="dense" name="gptSystemPrompt" label="AI System Prompt" multiline rows={3}
-          value={settings.gptSystemPrompt} onChange={handleChange} helperText="Instructions for the AI assistant." sx={{mt:2}}
+          value={settings.gptSystemPrompt} onChange={handleChange} helperText="AIへの指示を設定します。" sx={{ mt: 2 }}
         />
-        <FormControl fullWidth margin="dense" sx={{mt:2}}>
-            <InputLabel id="response-length-label">AI Response Length</InputLabel>
-            <Select
-                labelId="response-length-label" name="responseLength" value={settings.responseLength}
-                onChange={handleChange} label="AI Response Length"
-            >
-                <MenuItem value="concise">Concise (Brief & to the point)</MenuItem>
-                <MenuItem value="medium">Medium (Balanced detail)</MenuItem>
-                <MenuItem value="lengthy">Lengthy (Detailed explanations)</MenuItem>
-            </Select>
+        <FormControl fullWidth margin="dense" sx={{ mt: 2 }}>
+          <InputLabel id="response-length-label">AI Response Length</InputLabel>
+          <Select
+            labelId="response-length-label" name="responseLength" value={settings.responseLength}
+            onChange={handleChange} label="AI Response Length"
+          >
+            <MenuItem value="concise">Concise (Brief & to the point)</MenuItem>
+            <MenuItem value="medium">Medium (Balanced detail)</MenuItem>
+            <MenuItem value="lengthy">Lengthy (Detailed explanations)</MenuItem>
+          </Select>
         </FormControl>
 
         <Divider sx={{ my: 3 }} />
         <Typography variant="h6" gutterBottom>Manage Custom AI Models</Typography>
-        <Box sx={{p:2, border: '1px dashed', borderColor: 'divider', borderRadius: 1, mb:2}}>
-            <Typography variant="subtitle1" gutterBottom>Add New Model</Typography>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} sm={4}>
-                    <TextField fullWidth margin="dense" label="Model Display Name" value={newModelName} onChange={(e) => setNewModelName(e.target.value)} />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                    <TextField fullWidth margin="dense" label="Model ID / Path" value={newModelId} onChange={(e) => setNewModelId(e.target.value)} />
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                     <FormControl component="fieldset" margin="dense">
-                        <RadioGroup row name="newModelType" value={newModelType} onChange={(e) => setNewModelType(e.target.value)}>
-                            <FormControlLabel value="openai" control={<Radio size="small"/>} label="OpenAI" />
-                            <FormControlLabel value="gemini" control={<Radio size="small"/>} label="Gemini" />
-                        </RadioGroup>
-                    </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={1}>
-                    <Tooltip title="Add Model">
-                        <IconButton color="primary" onClick={handleAddNewModel} disabled={!newModelName.trim() || !newModelId.trim()}>
-                            <AddCircleOutlineIcon />
-                        </IconButton>
-                    </Tooltip>
-                </Grid>
+        <Box sx={{ p: 2, border: '1px dashed', borderColor: 'divider', borderRadius: 1, mb: 2 }}>
+          <Typography variant="subtitle1" gutterBottom>Add New Model</Typography>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={4}>
+              <TextField fullWidth margin="dense" label="Model Display Name" value={newModelName} onChange={(e) => setNewModelName(e.target.value)} />
             </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField fullWidth margin="dense" label="Model ID / Path" value={newModelId} onChange={(e) => setNewModelId(e.target.value)} />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <FormControl component="fieldset" margin="dense">
+                <RadioGroup row name="newModelType" value={newModelType} onChange={(e) => setNewModelType(e.target.value)}>
+                  <FormControlLabel value="openai" control={<Radio size="small" />} label="OpenAI" />
+                  <FormControlLabel value="gemini" control={<Radio size="small" />} label="Gemini" />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={1}>
+              <Tooltip title="Add Model">
+                <IconButton color="primary" onClick={handleAddNewModel} disabled={!newModelName.trim() || !newModelId.trim()}>
+                  <AddCircleOutlineIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
         </Box>
-         {(settings.customModels && settings.customModels.length > 0) && (
-            <Box>
-                <Typography variant="subtitle1" gutterBottom>Your Custom Models:</Typography>
-                <List dense>
-                {(settings.customModels || []).map((model, index) => (
-                    <ListItem
-                        key={index}
-                        secondaryAction={
-                            <Tooltip title="Remove Model">
-                            <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveCustomModel(index)} size="small">
-                                <DeleteIcon fontSize="small"/>
-                            </IconButton>
-                            </Tooltip>
-                        }
-                        sx={{mb:0.5, bgcolor: 'action.hover', borderRadius: 1, p:1}}
-                    >
-                        <ListItemText primary={model.label} secondary={`${model.value} (${model.type === 'gemini' ? 'Gemini' : 'OpenAI'})`} />
-                    </ListItem>
-                ))}
-                </List>
-            </Box>
+        {(settings.customModels && settings.customModels.length > 0) && (
+          <Box>
+            <Typography variant="subtitle1" gutterBottom>Your Custom Models:</Typography>
+            <List dense>
+              {(settings.customModels || []).map((model, index) => (
+                <ListItem
+                  key={index}
+                  secondaryAction={
+                    <Tooltip title="Remove Model">
+                      <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveCustomModel(index)} size="small">
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  }
+                  sx={{ mb: 0.5, bgcolor: 'action.hover', borderRadius: 1, p: 1 }}
+                >
+                  <ListItemText primary={model.label} secondary={`${model.value} (${model.type === 'gemini' ? 'Gemini' : 'OpenAI'})`} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
         )}
 
 
         <Divider sx={{ my: 3 }} />
         <Typography variant="h6" gutterBottom>Speech Configuration</Typography>
-         <TextField
+        <TextField
           fullWidth margin="dense" name="silenceTimerDuration" label="Silence Detection (seconds)"
           type="number" inputProps={{ step: 0.1, min: 0.5, max: 5 }} value={settings.silenceTimerDuration}
           onChange={handleChange} helperText="Auto-submit after this duration of silence (e.g., 1.2)."
         />
         <TextField
           fullWidth margin="dense" name="azureToken" label="Azure Speech API Key" type="password"
-          value={settings.azureToken || ''} onChange={handleChange} helperText="Required for voice transcription." sx={{mt:2}}
+          value={settings.azureToken || ''} onChange={handleChange} helperText="Required for voice transcription." sx={{ mt: 2 }}
         />
         <TextField
           fullWidth margin="dense" name="azureRegion" label="Azure Region"
-          value={settings.azureRegion || ''} onChange={handleChange} helperText="E.g., eastus, westus." sx={{mt:2}}
+          value={settings.azureRegion || ''} onChange={handleChange} helperText="E.g., eastus, westus." sx={{ mt: 2 }}
         />
         <TextField
           fullWidth margin="dense" name="azureLanguage" label="Azure Recognition Language"
-          value={settings.azureLanguage || ''} onChange={handleChange} helperText="E.g., en-US, es-ES." sx={{mt:2}}
+          value={settings.azureLanguage || ''} onChange={handleChange} helperText="E.g., en-US, es-ES." sx={{ mt: 2 }}
         />
       </DialogContent>
       <DialogActions sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>

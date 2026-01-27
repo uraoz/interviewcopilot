@@ -474,11 +474,31 @@ export default function InterviewPage() {
 
     const currentConfig = getConfig();
     const lengthSettings = {
-      concise: { temperature: 0.4, maxTokens: 250 },
-      medium: { temperature: 0.6, maxTokens: 500 },
-      lengthy: { temperature: 0.8, maxTokens: 1000 }
+      concise: { temperature: 0.4, maxTokens: 500 },   // 日本語: 約300字（30秒〜1分の回答）
+      medium: { temperature: 0.5, maxTokens: 1000 },   // 日本語: 約500字（1〜2分の回答）
+      lengthy: { temperature: 0.6, maxTokens: 2000 }   // 日本語: 約1000字（詳細な回答・ES向け）
     };
     const { temperature, maxTokens } = lengthSettings[currentConfig.responseLength || 'medium'];
+
+    // 企業情報とESの内容をシステムプロンプトに追加
+    let fullSystemPrompt = currentConfig.gptSystemPrompt;
+
+    // 企業情報を追加
+    if (currentConfig.companyName || currentConfig.companyInfo) {
+      fullSystemPrompt += `\n\n---面接先企業情報---`;
+      if (currentConfig.companyName && currentConfig.companyName.trim()) {
+        fullSystemPrompt += `\n企業名: ${currentConfig.companyName}`;
+      }
+      if (currentConfig.companyInfo && currentConfig.companyInfo.trim()) {
+        fullSystemPrompt += `\n\n${currentConfig.companyInfo}`;
+      }
+      fullSystemPrompt += `\n\n回答時はこの企業の理念や事業内容に沿った内容を意識してください。`;
+    }
+
+    // ESの内容を追加
+    if (currentConfig.esContent && currentConfig.esContent.trim()) {
+      fullSystemPrompt += `\n\n---応募者のES（エントリーシート）情報---\n以下は応募者が提出したESの内容です。回答時にこの情報を参考にして、一貫性のある回答を提案してください。\n\n${currentConfig.esContent}`;
+    }
 
     setIsProcessing(true);
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -496,11 +516,24 @@ export default function InterviewPage() {
           content: event.text,
         }));
 
+      // デバッグ用: LLMに送信するプロンプトをコンソールに出力
+      console.log('=== LLM Request Debug ===');
+      console.log('Model:', currentConfig.aiModel);
+      console.log('Temperature:', temperature);
+      console.log('Max Tokens:', maxTokens);
+      console.log('--- System Prompt ---');
+      console.log(fullSystemPrompt);
+      console.log('--- Conversation History ---');
+      console.log(JSON.stringify(conversationHistoryForAPI, null, 2));
+      console.log('--- User Input ---');
+      console.log(text);
+      console.log('=========================');
+
       if (currentConfig.aiModel.startsWith('gemini')) {
         const model = openAI.getGenerativeModel({
           model: currentConfig.aiModel,
           generationConfig: { temperature, maxOutputTokens: maxTokens },
-          systemInstruction: { parts: [{ text: currentConfig.gptSystemPrompt }] }
+          systemInstruction: { parts: [{ text: fullSystemPrompt }] }
         });
         const chat = model.startChat({
           history: conversationHistoryForAPI.map(msg => ({
@@ -520,7 +553,7 @@ export default function InterviewPage() {
         }
       } else {
         const messages = [
-          { role: 'system', content: currentConfig.gptSystemPrompt },
+          { role: 'system', content: fullSystemPrompt },
           ...conversationHistoryForAPI,
           { role: 'user', content: text }
         ];
