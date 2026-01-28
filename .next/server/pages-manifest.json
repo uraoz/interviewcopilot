@@ -3,5 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/landing": "pages/landing.js",
+  "/api/chat/gemini": "pages/api/chat/gemini.js",
   "/interview": "pages/interview.js"
 }
