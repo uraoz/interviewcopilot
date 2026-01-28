@@ -3,7 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/interview": "pages/interview.js",
-  "/landing": "pages/landing.js",
-  "/pip-log": "pages/pip-log.js"
+  "/practice": "pages/practice.js",
+  "/landing": "pages/landing.js"
 }

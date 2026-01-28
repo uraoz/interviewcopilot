@@ -591,7 +591,44 @@ export default function PracticePage() {
                                     <ScrollToBottom className="scroll-to-bottom" followButtonClassName="hidden-follow-button">
                                         <Box sx={{ p: 2 }}>
                                             {messages.map(renderMessage)}
-                                            {isProcessing && (
+                                            {/* Show streaming response */}
+                                            {isProcessing && streamingResponse && (
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        mb: 2,
+                                                        alignItems: 'flex-start'
+                                                    }}
+                                                >
+                                                    <Avatar sx={{ bgcolor: theme.palette.info.light, mx: 1.5, mt: 0.5 }}>
+                                                        <RecordVoiceOverIcon sx={{ color: theme.palette.getContrastText(theme.palette.info.light) }} />
+                                                    </Avatar>
+                                                    <Paper
+                                                        variant="outlined"
+                                                        sx={{
+                                                            p: 2,
+                                                            maxWidth: '70%',
+                                                            bgcolor: theme.palette.background.default,
+                                                            borderColor: theme.palette.divider,
+                                                        }}
+                                                    >
+                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                                                            <Typography variant="subtitle2" fontWeight="bold">面接官</Typography>
+                                                            <CircularProgress size={14} sx={{ ml: 1 }} />
+                                                        </Box>
+                                                        <ReactMarkdown
+                                                            components={{
+                                                                p: ({ node, ...props }) => <Typography paragraph {...props} sx={{ mb: 1, fontSize: '0.95rem' }} />,
+                                                            }}
+                                                        >
+                                                            {streamingResponse}
+                                                        </ReactMarkdown>
+                                                    </Paper>
+                                                </Box>
+                                            )}
+                                            {/* Show loading indicator when no streaming content yet */}
+                                            {isProcessing && !streamingResponse && (
                                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 2 }}>
                                                     <CircularProgress size={24} />
                                                     <Typography variant="caption" sx={{ ml: 1 }}>面接官が考えています...</Typography>
