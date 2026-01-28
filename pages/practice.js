@@ -40,7 +40,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import StopIcon from '@mui/icons-material/Stop';
 
 // Third-party Libraries
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
 import OpenAI from 'openai';
 import ReactMarkdown from 'react-markdown';
@@ -113,8 +112,8 @@ export default function PracticePage() {
                         setOpenAI(null);
                         return;
                     }
-                    const genAI = new GoogleGenerativeAI(currentConfig.geminiKey);
-                    setOpenAI(genAI);
+                    // Gemini uses API routes, just mark as ready
+                    setOpenAI({ type: 'gemini' });
                 } else {
                     if (!currentConfig.openaiKey) {
                         showSnackbar('OpenAI API key required. Please set it in Settings.', 'error');
@@ -208,14 +207,7 @@ export default function PracticePage() {
             let responseText = '';
 
             if (currentConfig.aiModel.startsWith('gemini')) {
-                const model = openAI.getGenerativeModel({
-                    model: currentConfig.aiModel,
-                    generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
-                    systemInstruction: { parts: [{ text: systemPrompt }] }
-                });
-
-                // Gemini requires history to start with 'user' and alternate roles
-                // Build chat history ensuring proper format
+                // Build chat history for API
                 let chatHistory = [];
 
                 if (!isStarting && updatedMessages.length > 0) {
@@ -223,22 +215,22 @@ export default function PracticePage() {
                     if (updatedMessages[0].role === 'assistant') {
                         chatHistory.push({
                             role: 'user',
-                            parts: [{ text: '面接を開始してください。' }]
+                            content: '面接を開始してください。'
                         });
                     }
 
                     // Add all messages, ensuring no consecutive same-role messages
                     for (const msg of updatedMessages) {
-                        const geminiRole = msg.role === 'user' ? 'user' : 'model';
+                        const role = msg.role === 'user' ? 'user' : 'assistant';
                         const lastEntry = chatHistory[chatHistory.length - 1];
 
-                        if (lastEntry && lastEntry.role === geminiRole) {
+                        if (lastEntry && lastEntry.role === role) {
                             // Merge consecutive same-role messages
-                            lastEntry.parts[0].text += '\n\n' + msg.content;
+                            lastEntry.content += '\n\n' + msg.content;
                         } else {
                             chatHistory.push({
-                                role: geminiRole,
-                                parts: [{ text: msg.content }]
+                                role: role,
+                                content: msg.content
                             });
                         }
                     }
@@ -247,7 +239,7 @@ export default function PracticePage() {
                 const prompt = isStarting ? '面接を開始してください。' : userMessage;
 
                 // デバッグ用: API入力をコンソールに出力
-                console.log('=== Practice Mode - Gemini API Request ===');
+                console.log('=== Practice Mode - Gemini API Request (via API Route) ===');
                 console.log('Model:', currentConfig.aiModel);
                 console.log('--- System Prompt ---');
                 console.log(systemPrompt);
@@ -257,14 +249,59 @@ export default function PracticePage() {
                 console.log(prompt);
                 console.log('==========================================');
 
-                const chat = model.startChat({ history: chatHistory });
-                // Use streaming for Gemini
-                const result = await chat.sendMessageStream(prompt);
-                for await (const chunk of result.stream) {
-                    if (chunk && typeof chunk.text === 'function') {
-                        const chunkText = chunk.text();
-                        responseText += chunkText;
-                        setStreamingResponse(responseText);
+                // Use API route for Gemini
+                const response = await fetch('/api/chat/gemini', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: chatHistory,
+                        systemPrompt: systemPrompt,
+                        model: currentConfig.aiModel,
+                        temperature: 0.7,
+                        maxOutputTokens: 500,
+                        apiKey: currentConfig.geminiKey,
+                        userMessage: prompt,
+                        thinkingLevel: currentConfig.geminiThinkingLevel || 'auto'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP error: ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const parsed = JSON.parse(data);
+                                if (parsed.error) {
+                                    throw new Error(parsed.error);
+                                }
+                                if (parsed.content) {
+                                    responseText += parsed.content;
+                                    setStreamingResponse(responseText);
+                                }
+                            } catch (parseError) {
+                                if (data !== '' && !data.startsWith('[DONE]')) {
+                                    console.warn('Failed to parse SSE data:', data);
+                                }
+                            }
+                        }
                     }
                 }
             } else {

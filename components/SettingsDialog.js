@@ -221,6 +221,14 @@ export default function SettingsDialog({ open, onClose, onSave }) {
             <MenuItem value="lengthy">Lengthy (Detailed explanations)</MenuItem>
           </Select>
         </FormControl>
+        <TextField
+          fullWidth margin="dense" name="conversationHistoryLimit" label="過去ログ件数"
+          type="number" inputProps={{ step: 1, min: 0, max: 20 }}
+          value={settings.conversationHistoryLimit ?? 6}
+          onChange={handleChange}
+          helperText="AIに送信する過去の会話履歴の件数（0〜20件）。多いほど文脈を理解しますがトークン数が増えます。"
+          sx={{ mt: 2 }}
+        />
 
         <Divider sx={{ my: 3 }} />
         <Typography variant="h6" gutterBottom>Manage Custom AI Models</Typography>

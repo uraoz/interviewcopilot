@@ -27,6 +27,7 @@ const defaultConfig = {
   aiModel: 'gpt-3.5-turbo', // Default to a common one
   silenceTimerDuration: 1.2,
   responseLength: 'medium',
+  conversationHistoryLimit: 6, // Number of past messages to include when sending to LLM
   companyName: '', // 面接先の企業名
   companyInfo: '', // 企業の業務内容・理念など
   esContent: '', // ES（エントリーシート）の内容を保存

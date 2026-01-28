@@ -54,7 +54,6 @@ import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 
 // Third-party Libraries
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
 import throttle from 'lodash.throttle';
@@ -146,8 +145,8 @@ export default function InterviewPage() {
             setOpenAI(null);
             return;
           }
-          const genAI = new GoogleGenerativeAI(currentConfig.geminiKey);
-          setOpenAI(genAI);
+          // Gemini uses API routes, just mark as ready
+          setOpenAI({ type: 'gemini' });
         } else {
           if (!currentConfig.openaiKey) {
             showSnackbar('OpenAI API key required. Please set it in Settings.', 'error');
@@ -468,6 +467,17 @@ export default function InterviewPage() {
       return;
     }
 
+    // ユーザーの回答（マイク入力）の場合は履歴に追加するだけでAI応答は不要
+    if (source === 'microphone') {
+      const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      dispatch(addToHistory({ type: 'question', text, timestamp, source, status: 'completed' }));
+      // マイクの文字起こし欄をクリア
+      finalTranscript.current.microphone = '';
+      micInterimTranscription.current = '';
+      setMicTranscription('');
+      return;
+    }
+
     const currentConfig = getConfig();
 
     // Validate API key based on model
@@ -516,11 +526,15 @@ export default function InterviewPage() {
     dispatch(setAIResponse(''));
 
     try {
+      // 過去の質問内容とユーザーの発言を履歴として渡す（AIの応答は含めない）
+      // source: 'system' = 面接官の質問, source: 'microphone' = ユーザーの回答
+      // 面接官の質問は pending でも含め、現在処理中のもの（今回のtext）は最後のuserMessageとして渡すので除外
+      const historyLimit = currentConfig.conversationHistoryLimit ?? 6;
       const conversationHistoryForAPI = history
-        .filter(e => e.text && (e.type === 'question' || e.type === 'response') && e.status !== 'pending')
-        .slice(-6)
+        .filter(e => e.text && e.type === 'question' && e.text !== text)  // 現在の質問は除外（userMessageとして別途渡す）
+        .slice(-historyLimit)
         .map(event => ({
-          role: event.type === 'question' ? 'user' : 'assistant',
+          role: event.source === 'system' ? 'user' : 'assistant',  // system=面接官の質問, microphone=ユーザーの回答
           content: event.text,
         }));
 
@@ -1077,11 +1091,11 @@ export default function InterviewPage() {
             <Grid item xs={12} md={3} sx={{ display: 'flex', flexDirection: 'column' }}>
               <Card sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                 <CardHeader title="Your Mic (Candidate)" avatar={<PersonIcon />} sx={{ pb: 1 }} />
-                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                   <FormControlLabel
                     control={<Switch checked={isManualMode} onChange={e => setIsManualMode(e.target.checked)} color="primary" />}
                     label="Manual Input Mode"
-                    sx={{ mb: 1 }}
+                    sx={{ mb: 1, flexShrink: 0 }}
                   />
                   <TextField
                     fullWidth
@@ -1092,9 +1106,9 @@ export default function InterviewPage() {
                     onChange={(e) => handleManualInputChange(e.target.value, 'microphone')}
                     onKeyDown={(e) => handleKeyPress(e, 'microphone')}
                     placeholder="Your speech or manual input..."
-                    sx={{ mb: 2, flexGrow: 1 }}
+                    sx={{ mb: 2, flexGrow: 1, overflow: 'auto' }}
                   />
-                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 'auto' }}>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', flexShrink: 0 }}>
                     <Button
                       onClick={startMicrophoneRecognition}
                       variant="contained"
