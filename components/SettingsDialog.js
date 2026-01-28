@@ -162,6 +162,25 @@ export default function SettingsDialog({ open, onClose, onSave }) {
           </Select>
         </FormControl>
 
+        <FormControl fullWidth margin="dense" sx={{ mt: 2 }}>
+          <InputLabel id="gemini-thinking-level-label">Gemini Thinking Level</InputLabel>
+          <Select
+            labelId="gemini-thinking-level-label" name="geminiThinkingLevel"
+            value={settings.geminiThinkingLevel || 'auto'}
+            onChange={handleChange} label="Gemini Thinking Level"
+          >
+            <MenuItem value="auto">Auto（動的・デフォルト）</MenuItem>
+            <MenuItem value="off">Off（無効・2.5のみ）</MenuItem>
+            <MenuItem value="minimal">Minimal（最小限）</MenuItem>
+            <MenuItem value="low">Low（低）</MenuItem>
+            <MenuItem value="medium">Medium（中）</MenuItem>
+            <MenuItem value="high">High（高）</MenuItem>
+          </Select>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+            Geminiモデルの推論レベルを設定します。Highは深い推論、Lowは高速レスポンス向けです。
+          </Typography>
+        </FormControl>
+
         <Divider sx={{ my: 3 }} />
         <Typography variant="h6" gutterBottom>面接先企業情報</Typography>
         <TextField

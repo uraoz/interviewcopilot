@@ -467,23 +467,32 @@ export default function InterviewPage() {
       showSnackbar('No input text to process.', 'warning');
       return;
     }
-    if (!openAI || isAILoading) {
-      showSnackbar('AI client is not ready. Please wait or check settings.', 'warning');
-      return;
-    }
 
     const currentConfig = getConfig();
+
+    // Validate API key based on model
+    if (currentConfig.aiModel.startsWith('gemini')) {
+      if (!currentConfig.geminiKey) {
+        showSnackbar('Gemini API key required. Please set it in Settings.', 'error');
+        return;
+      }
+    } else {
+      if (!currentConfig.openaiKey) {
+        showSnackbar('OpenAI API key required. Please set it in Settings.', 'error');
+        return;
+      }
+    }
+
     const lengthSettings = {
-      concise: { temperature: 0.4, maxTokens: 500 },   // 日本語: 約300字（30秒〜1分の回答）
-      medium: { temperature: 0.5, maxTokens: 1000 },   // 日本語: 約500字（1〜2分の回答）
-      lengthy: { temperature: 0.6, maxTokens: 2000 }   // 日本語: 約1000字（詳細な回答・ES向け）
+      concise: { temperature: 0.4, maxTokens: 500 },
+      medium: { temperature: 0.5, maxTokens: 1000 },
+      lengthy: { temperature: 0.6, maxTokens: 2000 }
     };
     const { temperature, maxTokens } = lengthSettings[currentConfig.responseLength || 'medium'];
 
     // 企業情報とESの内容をシステムプロンプトに追加
     let fullSystemPrompt = currentConfig.gptSystemPrompt;
 
-    // 企業情報を追加
     if (currentConfig.companyName || currentConfig.companyInfo) {
       fullSystemPrompt += `\n\n---面接先企業情報---`;
       if (currentConfig.companyName && currentConfig.companyName.trim()) {
@@ -495,7 +504,6 @@ export default function InterviewPage() {
       fullSystemPrompt += `\n\n回答時はこの企業の理念や事業内容に沿った内容を意識してください。`;
     }
 
-    // ESの内容を追加
     if (currentConfig.esContent && currentConfig.esContent.trim()) {
       fullSystemPrompt += `\n\n---応募者のES（エントリーシート）情報---\n以下は応募者が提出したESの内容です。回答時にこの情報を参考にして、一貫性のある回答を提案してください。\n\n${currentConfig.esContent}`;
     }
@@ -517,7 +525,7 @@ export default function InterviewPage() {
         }));
 
       // デバッグ用: LLMに送信するプロンプトをコンソールに出力
-      console.log('=== LLM Request Debug ===');
+      console.log('=== LLM Request Debug (via API Route) ===');
       console.log('Model:', currentConfig.aiModel);
       console.log('Temperature:', temperature);
       console.log('Max Tokens:', maxTokens);
@@ -529,49 +537,81 @@ export default function InterviewPage() {
       console.log(text);
       console.log('=========================');
 
-      if (currentConfig.aiModel.startsWith('gemini')) {
-        const model = openAI.getGenerativeModel({
-          model: currentConfig.aiModel,
-          generationConfig: { temperature, maxOutputTokens: maxTokens },
-          systemInstruction: { parts: [{ text: fullSystemPrompt }] }
-        });
-        const chat = model.startChat({
-          history: conversationHistoryForAPI.map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.content }]
-          })),
-        });
-        const result = await chat.sendMessageStream(text);
-        for await (const chunk of result.stream) {
-          if (chunk && typeof chunk.text === 'function') {
-            const chunkText = chunk.text();
-            streamedResponse += chunkText;
-            if (throttledDispatchSetAIResponseRef.current) {
-              throttledDispatchSetAIResponseRef.current(streamedResponse);
-            }
-          }
-        }
-      } else {
-        const messages = [
+      const isGemini = currentConfig.aiModel.startsWith('gemini');
+      const apiEndpoint = isGemini ? '/api/chat/gemini' : '/api/chat/openai';
+
+      const requestBody = isGemini ? {
+        messages: conversationHistoryForAPI,
+        systemPrompt: fullSystemPrompt,
+        model: currentConfig.aiModel,
+        temperature,
+        maxOutputTokens: maxTokens,
+        apiKey: currentConfig.geminiKey,
+        userMessage: text,
+        thinkingLevel: currentConfig.geminiThinkingLevel || 'auto'
+      } : {
+        messages: [
           { role: 'system', content: fullSystemPrompt },
           ...conversationHistoryForAPI,
           { role: 'user', content: text }
-        ];
-        const stream = await openAI.chat.completions.create({
-          model: currentConfig.aiModel,
-          messages,
-          temperature,
-          max_tokens: maxTokens,
-          stream: true,
-        });
-        for await (const chunk of stream) {
-          const chunkText = chunk.choices[0]?.delta?.content || '';
-          streamedResponse += chunkText;
-          if (throttledDispatchSetAIResponseRef.current) {
-            throttledDispatchSetAIResponseRef.current(streamedResponse);
+        ],
+        model: currentConfig.aiModel,
+        temperature,
+        max_tokens: maxTokens,
+        apiKey: currentConfig.openaiKey
+      };
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+
+        // Keep the last incomplete line in the buffer
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') break;
+
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.error) {
+                throw new Error(parsed.error);
+              }
+              if (parsed.content) {
+                streamedResponse += parsed.content;
+                if (throttledDispatchSetAIResponseRef.current) {
+                  throttledDispatchSetAIResponseRef.current(streamedResponse);
+                }
+              }
+            } catch (parseError) {
+              // Skip invalid JSON lines
+              if (data !== '' && !data.startsWith('[DONE]')) {
+                console.warn('Failed to parse SSE data:', data);
+              }
+            }
           }
         }
       }
+
       if (throttledDispatchSetAIResponseRef.current && typeof throttledDispatchSetAIResponseRef.current.cancel === 'function') {
         throttledDispatchSetAIResponseRef.current.cancel();
       }
@@ -654,7 +694,7 @@ export default function InterviewPage() {
   }, []);
 
   const renderHistoryItem = (item, index) => {
-    if (item.type !== 'response') return null;
+    if (item.type !== 'response' && item.type !== 'current_streaming') return null;
     const Icon = SmartToyIcon;
     const title = 'AI Assistant';
     const avatarBgColor = theme.palette.secondary.light;

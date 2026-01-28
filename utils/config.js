@@ -44,6 +44,7 @@ const defaultConfig = {
   azureRegion: 'japaneast',
   azureLanguage: 'ja-JP',
   customModels: [], // Array for user-added models { value: 'model-id', label: 'Display Name', type: 'openai' | 'gemini' }
+  geminiThinkingLevel: 'auto', // Gemini thinking control: 'auto', 'off', 'minimal', 'low', 'medium', 'high'
   systemAutoMode: true,
   isManualMode: false,
   // 面接練習モード用設定
