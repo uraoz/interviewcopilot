@@ -29,7 +29,7 @@
 1. **リポジトリをclone**
    
    ```bash
-   git clone https://github.com/hariiprasad/interviewcopilot.git
+   git clone https://github.com/uraoz/interviewcopilot
    cd interviewcopilot
    ```
 
