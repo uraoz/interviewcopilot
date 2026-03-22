@@ -2,9 +2,6 @@
 
 就職面接でリアルタイムの音声認識とAIによる回答サポートを提供する、就活生のための面接練習・本番サポートツールです。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-
 ## 機能
 
 - **リアルタイム音声認識**: 面接官の質問を自動で文字起こし
@@ -152,15 +149,6 @@ interviewcopilot/
 └── utils/               # 便利な関数
 ```
 
-## ライセンス 
-
-MITライセンス（無料で使用・改変・再配布可能）
-
-## 謝辞 
-
-- AIモデルを提供するOpenAI・Google
-- 音声認識を提供するMicrosoft Azure
-- UIライブラリを提供するMaterial-UI・Reactコミュニティ
 
 ---
 
